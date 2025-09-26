@@ -14,6 +14,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="mx-auto flex max-w-screen-md flex-col gap-4 bg-stone-50 p-4 text-stone-900 sm:p-8">
+        <!-- Commenting out game header 
         <header className="flex items-center gap-4">
           <Link href="/" className="shrink-0">
             <img
@@ -30,8 +31,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             <p>Group words that share a common thread.</p>
           </div>
         </header>
+        
         <hr className="border-stone-300" />
-
+        -->
         <Suspense>{children}</Suspense>
       </body>
     </html>
