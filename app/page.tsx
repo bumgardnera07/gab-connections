@@ -89,7 +89,7 @@ export default function Page() {
             {gameOptions.title.toUpperCase()}
           </span>{" "}
         </h2>
-        <br>  </br>
+        <br></br>
         <h3>Create four groups of four!f</h3>
 
       </div>
