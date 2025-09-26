@@ -90,7 +90,7 @@ export default function Page() {
           </span>{" "}
         </h2>
         <br></br>
-        <h3>Create four groups of four!f</h3>
+        <h3>Create four groups of four!</h3>
 
       </div>
 
