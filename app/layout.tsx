@@ -6,8 +6,8 @@ import Link from "next/link";
 /* eslint-disable @next/next/no-img-element */
 
 export const metadata: Metadata = {
-  title: "Custom Connections",
-  description: "Create your own custom game of connections.",
+  title: "Kaimana Klassik 37 - Konnections",
+  description: "Bid Details for Team: Konnections",
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -25,7 +25,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
           <div>
             <Link href="/">
-              <h1 className="text-2xl font-bold">Custom Connections</h1>
+              <h1 className="text-2xl font-bold">Konnections</h1>
             </Link>
             <p>Group words that share a common thread.</p>
           </div>
