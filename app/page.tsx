@@ -19,6 +19,7 @@ import { alphabetical, hasSameElements, range, toSwapped } from "~/lib/utils";
 import { FinishedCategory } from "./play/finished-category";
 import { WordTile } from "./play/word-tile";
 import FadeIn from 'react-fade-in';
+import Image from 'next/image';
 
 
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -188,37 +189,49 @@ export default function Page() {
             
 <div>
   <p>Thanks for solving our little puzzle, and we hope you enjoyed it!</p>
+  <br></br>
 
   <p>We are <strong>Konnections</strong>, a team created to celebrate the connections we all make by tossing the plastic circle. Sometimes fleeting, sometimes lasting the rest of our lives—always deeply felt—we cherish those moments of kinship that occur on the playing field, on the sideline, at the tournament party, and scrolling back through the team Groupme years down the line.</p>
-  <img src={require('/assets/Fuji.png')} alt="Crane and Fan hold a disc in front of a team of ultimate players near Mount Fuji" />
-
+  <br></br>
+  <Image src={require('/assets/Fuji.png')} alt="Crane and Fan hold a disc in front of a team of ultimate players near Mount Fuji" />
+  <br></br>  
   <p><strong>Konnections</strong> is a synthesis of a number of different teams that have crossed paths and intermingled over the years, konnected by a common love of ultimate.</p>
-
-  <h3>Bid Notes:</h3>
-
+ <br></br>  
+  <h3><strong>Bid Notes:</strong></h3>
+ <br></br>  
   <ul>
     <li>
       <strong>🎉 Spirit:</strong> The spirit of ultimate is core to our identity as a team and as players. We never attend a tournament without a zany spirit game to play with our opponents and we usually bring spirit gifts too. Our spirit game will encourage our fellow players to think about the konnections that unite us and hopefully help them learn more about their friends and opponents! We take Spirit seriously. We won the spirit of the game award in the Mixed Division at Beach Natties 2022 (with our mutual friend Cat Nansalo)!
     </li>
-    <img src={require('/assets/Spirited.png')} alt="Happy Ultimate players huddle after a spirited game on a hazy beach." />
-
+    <br></br>  
+    <Image src={require('/assets/Spirited.png')} alt="Happy Ultimate players huddle after a spirited game on a hazy beach." />
+<br></br>  
     <li>
       <strong>💯 Competitiveness:</strong> We just won Sunbreak 2025! Our team is largely composed of competitive club players either grinding it out in the upper half of regionals or competing for elite club teams. While this specific iteration will have new faces and new friendships, we’re all competitive ultimate players in our own communities.
     </li>
-    <img src={require('/assets/Sunbreak.png')} alt="A team photo of Treat Yo Shelf at Sunbreak 2024" />
-
+    <br></br>  
+    <Image src={require('/assets/Sunbreak.png')} alt="A team photo of Treat Yo Shelf at Sunbreak 2024" />
+<br></br>  
     <li>
       <strong>👷‍♀️ Volunteerism:</strong> Our team is comprised almost entirely of Ultimate Community board members, organizers and coaches. We have all spent significant time helping with tournaments in our own communities and we are, of course, happy to assist in any way we can whether that’s event check-in, clean up, coolers, or anything else you might need us to help with. Here we are cooking up a mess of burritos for <a href="https://ashevilleultimate.org/e/hodown-throwdown-recreational">Hodown Throwdown 2024</a>:
     </li>
-    <img src={require('/assets/Volunteering.png')} alt="A busy kitchen where an ultimate player is chopping up peppers" />
-
+    <br></br>  
+    <Image src={require('/assets/Volunteering.png')} alt="A busy kitchen where an ultimate player is chopping up peppers" />
+<br></br>  
     <li>
       <strong>👭 Making New Friends!</strong> We’re so happy to hear that! Making new friends is literally what this team is about!
     </li>
-    <img src={require('/assets/MakingFriends.png')} alt="Ultimate players play a spirit game involving Spa Masks. Jake looks kind of dangerous." />
+    <br></br>  
+    <Image src={require('/assets/MakingFriends.png')} alt="Ultimate players play a spirit game involving Spa Masks. Jake looks kind of dangerous." />
+    <br></br>  
   </ul>
 
   <p>Thanks so much for your consideration and for everything you’re doing to organize an awesome event. We hope this is the best Kaimana tournament yet!</p>
+
+  <br></br>
+  <br></br>
+  <p>This page was created using an open source project from Zach Robinson: https://github.com/zsrobinson/custom-connections</p>
+  
 </div>
           </FadeIn>
       ) : lostGame ? (
