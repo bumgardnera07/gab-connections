@@ -68,12 +68,6 @@ export function getCommonColors(options: GameOptions, guess: string[]) {
 export function getTotalMistakes(options: GameOptions, guesses: string[][]) {
   let total = 0;
 
-  for (let i = 0; i < guesses.length; i++) {
-    if (validateGuess(options, guesses[i]) === false) {
-      total++;
-    }
-  }
-
   return total;
 }
 

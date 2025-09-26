@@ -1,61 +1,229 @@
-import { IconPlus } from "@tabler/icons-react";
+"use client";
+
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Link from "next/link";
-import { examples } from "~/lib/examples";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { CircularButton } from "~/components/circular-button";
+import {
+  colors,
+  getColor,
+  getCommonColors,
+  getTotalMistakes,
+  regenerateWordPool,
+  validateGuess,
+} from "~/lib/game";
+import { GameOptions, gameOptionsSchema } from "~/lib/game-options";
+import { alphabetical, hasSameElements, range, toSwapped } from "~/lib/utils";
+import { FinishedCategory } from "./play/finished-category";
+import { WordTile } from "./play/word-tile";
+import FadeIn from 'react-fade-in';
+
+
+/* eslint-disable react-hooks/exhaustive-deps */
 
 export default function Page() {
+  const params = useSearchParams();
+  const [mistakesAnimateRef] = useAutoAnimate();
+  const [poolAnimateRef, setPoolAnimated] = useAutoAnimate();
+
+  const [gameOptions, setGameOptions] = useState<GameOptions | undefined>();
+  const [selectedWords, setSelectedWords] = useState<string[]>([]);
+  const [wordPool, setWordPool] = useState<string[]>([]);
+  const [guesses, setGuesses] = useState<string[][]>([]);
+
+  useEffect(() => {
+    
+    try {
+      const decoded = JSON.parse(atob("eyJuYW1lcyI6WyIoc29tZSkgY2l0aWVzIHdlIGNvbWUgZnJvbSIsInN5bWJvbHMgb2YgdGhlIHBsYWNlIHdlJ2QgbGlrZSB0byBwbGF5IGZyaXNiZWUgc29vbiA7KSIsImEgZmV3IG9mIG91ciBmYXZvcml0ZSBzcGlyaXQgZ2FtZSBpbXBsZW1lbnRzIiwiZmlyc3QgaGFsZiBvZiBzb21lIG9mIG91ciBmYXZvcml0ZSB0b3VybmFtZW50cyB3ZSd2ZSBwbGF5ZWQgaW4iXSwid29yZHMiOltbImNoYXJsb3R0ZSIsInNlYXR0bGUiLCJuZXcgeW9yayIsInNhbiBmcmFuY2lzY28iXSxbInNoYWthIiwidWt1bGVsZSIsImh1bGEiLCJuZW5lIl0sWyJmcmVzaCBtYWRlIGZsYXBqYWNrcyIsImlrZWEgc2hlbGYiLCJvcmNhIiwic3BhIG1hc2siXSxbImdhaWEiLCJsZWkiLCJzdW4iLCJ3aWxkIl1dLCJhdXRob3IiOiIiLCJ0aXRsZSI6ImthaW1hbmEga29ubmVjdGlvbnMifQ=="));
+      const options = gameOptionsSchema.parse(decoded);
+      console.info("setting game options from URL", options);
+
+      for (let i = 0; i < 4; i++) {
+        options.words[i].sort(alphabetical);
+      }
+
+      console.info("setting game options from URL", options);
+
+      setGameOptions(options);
+      setWordPool(regenerateWordPool(options, guesses));
+    } catch {
+      console.error("could not parse game options from URL");
+    }
+  }, []);
+
+  // ensure that gameOptions won't be undefined
+  if (gameOptions === undefined) {
+    return <main></main>;
+  }
+
+  // derived state
+  const totalMistakes = getTotalMistakes(gameOptions, guesses);
+  const remainingMistakes = 4 - totalMistakes;
+  const wonGame = wordPool.length === 0;
+  const lostGame = remainingMistakes === 0;
+  const submitDisabled =
+    selectedWords.length !== 4 ||
+    guesses.some((guess) => hasSameElements(guess, selectedWords));
+
   return (
     <main className="flex flex-col gap-4">
-      <p>
-        This is a simple tool to allow you to create and share your own versions
-        of the New York Time&apos;s{" "}
-        <a
-          href="https://www.nytimes.com/games/connections"
-          className="underline"
-          target="_blank"
-        >
-          Connections
-        </a>{" "}
-        game. All game data is embedded in the URL, so none of your data is
-        stored on a server. After generating a new game, just copy the URL to
-        send it to your friends. The code for this website is{" "}
-        <a
-          href="https://github.com/zsrobinson/custom-connections"
-          className="underline"
-          target="_blank"
-        >
-          open source
-        </a>{" "}
-        and was created by{" "}
-        <a href="https://zsrobinson.com" className="underline" target="_blank">
-          Zachary Robinson
-        </a>
-        .
-      </p>
+      <div>
+        <Toaster
+          containerStyle={{
+            position: "relative",
+            inset: 0,
+            flexShrink: 0,
+          }}
+          toastOptions={{
+            duration: 3000,
+            className:
+              "!shrink-0 !rounded-md !bg-stone-900 !p-2 !text-stone-50 !shadow-md",
+          }}
+        />
 
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <Link
-          href="/new"
-          className="flex basis-1/2 flex-col items-center justify-center gap-2 rounded-md border border-stone-300 p-4 transition-colors hover:bg-stone-100"
-        >
-          <IconPlus className="h-8 w-8 sm:h-12 sm:w-12" />
-          <span className="font-semibold">Create New Game</span>
-        </Link>
-
-        <div className="flex basis-1/2 flex-col gap-4">
-          {examples.map((example, i) => (
-            <Link
-              href={`/play?options=${btoa(JSON.stringify(example))}`}
-              className="rounded-md border border-stone-300 p-4 text-center transition-colors hover:bg-stone-100"
-              key={i}
-            >
-              <span className="font-semibold">
-                {example.title.toUpperCase()}
-              </span>{" "}
-              by {example.author.toUpperCase()}
-            </Link>
-          ))}
-        </div>
+        <h2>
+          <span className="text-2xl font-semibold">
+            {gameOptions.title.toUpperCase()}
+          </span>{" "}
+        </h2>
       </div>
+
+      <div className="flex flex-col gap-2 sm:gap-4">
+        {/* print out finished categories */}
+        {guesses.map((guess) =>
+          validateGuess(gameOptions, guess) ? (
+            <FinishedCategory
+              name={gameOptions.names[getColor(gameOptions, guess[0])]}
+              words={gameOptions.words[getColor(gameOptions, guess[0])]}
+              color={colors[getColor(gameOptions, guess[0])]}
+              key={getColor(gameOptions, guess[0])}
+            />
+          ) : undefined,
+        )}
+
+        {/* grid from the word pool */}
+        {wordPool.length > 0 && (
+          <div className="grid grid-cols-4 gap-2 sm:gap-4" ref={poolAnimateRef}>
+            {wordPool.map((word) => (
+              <WordTile
+                key={word}
+                selected={selectedWords.includes(word)}
+                onClick={() => {
+                  if (selectedWords.includes(word)) {
+                    setSelectedWords(selectedWords.filter((w) => w !== word));
+                  } else if (selectedWords.length < 4) {
+                    setSelectedWords([...selectedWords, word]);
+                  }
+                }}
+              >
+                {word}
+              </WordTile>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {!wonGame && !lostGame ? (
+        <div className="flex flex-wrap gap-4 place-self-center sm:place-self-auto">
+          <CircularButton
+            onClick={() =>
+              setWordPool(regenerateWordPool(gameOptions, guesses))
+            }
+          >
+            Shuffle
+          </CircularButton>
+
+          <CircularButton
+            disabled={selectedWords.length === 0}
+            onClick={() => setSelectedWords([])}
+          >
+            Deselect all
+          </CircularButton>
+
+          <CircularButton
+            variant={submitDisabled ? undefined : "filled"}
+            disabled={submitDisabled}
+            onClick={async () => {
+              const result = validateGuess(gameOptions, selectedWords);
+
+              if (result === true) {
+                // sort so the words swap to the right order
+                const sortedSelected = selectedWords.toSorted(alphabetical);
+
+                // swap guesses into the beginning of the pool
+                for (let a = 0; a < 4; a++) {
+                  setWordPool((pool) => {
+                    const b = pool.indexOf(sortedSelected[a]);
+                    return toSwapped(pool, a, b);
+                  });
+                }
+
+                setPoolAnimated(true);
+
+                await new Promise((res) => setTimeout(res, 500));
+                setGuesses([...guesses, selectedWords]);
+                setSelectedWords([]);
+                setWordPool((pool) =>
+                  pool.filter((word) => !selectedWords.includes(word)),
+                );
+
+                setPoolAnimated(false);
+              } else {
+                if (getCommonColors(gameOptions, selectedWords) === 3) {
+                  toast("One away...");
+                }
+
+                setGuesses([...guesses, selectedWords]);
+                setSelectedWords([]);
+              }
+            }}
+          >
+            Submit
+          </CircularButton>
+        </div>
+      ) : wonGame ? (
+          <FadeIn visible>
+            
+<div>
+  <p>Thanks for solving our little puzzle, and we hope you enjoyed it!</p>
+
+  <p>We are <strong>Konnections</strong>, a team created to celebrate the connections we all make by tossing the plastic circle. Sometimes fleeting, sometimes lasting the rest of our lives—always deeply felt—we cherish those moments of kinship that occur on the playing field, on the sideline, at the tournament party, and scrolling back through the team Groupme years down the line.</p>
+  <img src={require('/assets/Fuji.png')} alt="Crane and Fan hold a disc in front of a team of ultimate players near Mount Fuji" />
+
+  <p><strong>Konnections</strong> is a synthesis of a number of different teams that have crossed paths and intermingled over the years, konnected by a common love of ultimate.</p>
+
+  <h3>Bid Notes:</h3>
+
+  <ul>
+    <li>
+      <strong>🎉 Spirit:</strong> The spirit of ultimate is core to our identity as a team and as players. We never attend a tournament without a zany spirit game to play with our opponents and we usually bring spirit gifts too. Our spirit game will encourage our fellow players to think about the konnections that unite us and hopefully help them learn more about their friends and opponents! We take Spirit seriously. We won the spirit of the game award in the Mixed Division at Beach Natties 2022 (with our mutual friend Cat Nansalo)!
+    </li>
+    <img src={require('/assets/Spirited.png')} alt="Happy Ultimate players huddle after a spirited game on a hazy beach." />
+
+    <li>
+      <strong>💯 Competitiveness:</strong> We just won Sunbreak 2025! Our team is largely composed of competitive club players either grinding it out in the upper half of regionals or competing for elite club teams. While this specific iteration will have new faces and new friendships, we’re all competitive ultimate players in our own communities.
+    </li>
+    <img src={require('/assets/Sunbreak.png')} alt="A team photo of Treat Yo Shelf at Sunbreak 2024" />
+
+    <li>
+      <strong>👷‍♀️ Volunteerism:</strong> Our team is comprised almost entirely of Ultimate Community board members, organizers and coaches. We have all spent significant time helping with tournaments in our own communities and we are, of course, happy to assist in any way we can whether that’s event check-in, clean up, coolers, or anything else you might need us to help with. Here we are cooking up a mess of burritos for <a href="https://ashevilleultimate.org/e/hodown-throwdown-recreational">Hodown Throwdown 2024</a>:
+    </li>
+    <img src={require('/assets/Volunteering.png')} alt="A busy kitchen where an ultimate player is chopping up peppers" />
+
+    <li>
+      <strong>👭 Making New Friends!</strong> We’re so happy to hear that! Making new friends is literally what this team is about!
+    </li>
+    <img src={require('/assets/MakingFriends.png')} alt="Ultimate players play a spirit game involving Spa Masks. Jake looks kind of dangerous." />
+  </ul>
+
+  <p>Thanks so much for your consideration and for everything you’re doing to organize an awesome event. We hope this is the best Kaimana tournament yet!</p>
+</div>
+          </FadeIn>
+      ) : lostGame ? (
+        <p>You lost, refresh to try again!</p>
+      ) : null}
     </main>
   );
 }
