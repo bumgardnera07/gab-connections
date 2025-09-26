@@ -89,6 +89,9 @@ export default function Page() {
             {gameOptions.title.toUpperCase()}
           </span>{" "}
         </h2>
+        <br>  </br>
+        <h3>Create four groups of four!f</h3>
+
       </div>
 
       <div className="flex flex-col gap-2 sm:gap-4">
